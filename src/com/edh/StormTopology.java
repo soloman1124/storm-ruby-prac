@@ -2,6 +2,7 @@ package com.edh;
 
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
+import backtype.storm.StormSubmitter;
 import backtype.storm.topology.TopologyBuilder;
 
 /**
@@ -19,11 +20,16 @@ public class StormTopology {
 
     conf.setMaxTaskParallelism(3);
 
-    LocalCluster cluster = new LocalCluster();
-    cluster.submitTopology("event_count", conf, builder.createTopology());
+    if (args != null && args.length > 0) {
+      conf.setNumWorkers(3);
+      StormSubmitter.submitTopology(args[0], conf, builder.createTopology());
+    } else{
+      LocalCluster cluster=new LocalCluster();
+      cluster.submitTopology("event_count",conf,builder.createTopology());
 
-    Thread.sleep(10000);
-    cluster.shutdown();
+      Thread.sleep(10000);
+      cluster.shutdown();
+    }
   }
 
 }
